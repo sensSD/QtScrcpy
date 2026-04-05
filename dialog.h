@@ -2,6 +2,10 @@
 #define DIALOG_H
 
 #include <QDialog>
+#include <QPointer>
+
+#include "adbprocess.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,6 +26,8 @@ private slots:
     void on_TestButton_clicked();
 
 private:
+    QPointer<AdbProcess> myProcess;
+
     Ui::Dialog *ui;
 };
 #endif // DIALOG_H
