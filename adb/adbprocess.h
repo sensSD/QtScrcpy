@@ -3,17 +3,14 @@
 
 #include <QProcess>
 
+#include "adbEnums.h"
+
+using namespace AdbEnums;
+
 class AdbProcess : public QProcess
 {
     Q_OBJECT
 public:
-    enum ADB_EXEC_RESULT {
-        AER_SUCCESS_START,          // 启动成功
-        AER_ERROR_START,            // 启动失败
-        AER_SUCCESS_EXEC,           // 执行成功
-        AER_ERROR_EXEC,             // 执行失败
-        AER_ERROR_MISSING_BINARY,   // 找不到文件
-    };
 
     AdbProcess(QObject *parent = Q_NULLPTR);
 
@@ -95,12 +92,17 @@ public:
     static QString getAdbPath();
 
 signals:
+    /**
+     * adb执行结果
+     * @brief adbProcessResult
+     * @param processResult
+     */
     void adbProcessResult(ADB_EXEC_RESULT processResult);
 
 private:
 
     /**
-     * QProcess信号
+     * 信号处理
      * @brief initSignals
      */
     void initSignals();

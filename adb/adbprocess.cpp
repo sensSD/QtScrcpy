@@ -62,10 +62,11 @@ QStringList AdbProcess::getDevicesSerialFromStdOut()
 {
     QStringList serials;
     QStringList devicesInfoList = m_standardOutput.split(QRegularExpression("\r\n|\n"), Qt::SkipEmptyParts);
+
     for(const auto& deviceInfo : devicesInfoList) {
-        QStringList deviceInfos = deviceInfo.split(QRegularExpression("\t"), Qt::SkipEmptyParts);
-        if(2 == deviceInfos.size() && 0 == deviceInfos[1].compare("device")) {
-            serials << deviceInfos[0];
+        QStringList parts = deviceInfo.split("\t", Qt::SkipEmptyParts);
+        if(2 == parts.size() && parts[1] == "device") {
+            serials << parts[0];
         }
     }
 
@@ -81,7 +82,7 @@ QString AdbProcess::getDeviceIpFromStdOut()
         return match.captured(1);
     }
 
-    return "";
+    return QString();
 }
 
 QString AdbProcess::getStdOutput()
@@ -106,7 +107,7 @@ QString AdbProcess::getAdbPath()
                 dir.cdUp();
             }
 
-            s_adbPath = dir.path() + "/thrid_party/adb/win/adb.exe";
+            s_adbPath = dir.path() + "/third_party/adb/win/adb.exe";
         }
     }
     
@@ -122,7 +123,6 @@ void AdbProcess::execute(const QString &serial, const QStringList &args)
         adbArgs << "-s" << serial;
     }
     adbArgs << args;
-
 
     start(getAdbPath(), adbArgs);
 }
@@ -141,7 +141,7 @@ void AdbProcess::initSignals()
 
     // 退出状态
     connect(this, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-    [=](int exitCode, QProcess::ExitStatus exitStatus){
+[=](int exitCode, QProcess::ExitStatus exitStatus){
         if(QProcess::NormalExit == exitStatus && 0 == exitCode) {
             emit adbProcessResult(AER_SUCCESS_EXEC);
         } else {
@@ -152,13 +152,15 @@ void AdbProcess::initSignals()
 
     // 标准输出
     connect(this, &QProcess::readyReadStandardError, this, [this](){
-        m_standardError = QString::fromLocal8Bit(readAllStandardError()).trimmed();
-        qDebug() << readAllStandardError();
+        QByteArray error = readAllStandardError();
+        m_standardError = QString::fromLocal8Bit(error).trimmed();
+        qDebug() << QString::fromLocal8Bit(error);
     });
 
     connect(this, &QProcess::readyReadStandardOutput, this, [this](){
-        m_standardOutput = QString::fromLocal8Bit(readAllStandardOutput()).trimmed();
-        qDebug() << readAllStandardOutput();
+        QByteArray output = readAllStandardOutput();
+        m_standardOutput = QString::fromLocal8Bit(output).trimmed();
+        qDebug() << QString::fromLocal8Bit(output);
     });
 
     // 启动

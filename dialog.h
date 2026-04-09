@@ -4,8 +4,7 @@
 #include <QDialog>
 #include <QPointer>
 
-#include "adbprocess.h"
-
+#include "server.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,10 +22,11 @@ public:
     ~Dialog();
 
 private slots:
-    void on_TestButton_clicked();
+    void on_startServerBtn_clicked();
+    void on_stopServerBtn_clicked();
 
 private:
-    QPointer<AdbProcess> myProcess;
+    Server m_server;
 
     Ui::Dialog *ui;
 };

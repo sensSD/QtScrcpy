@@ -1,6 +1,6 @@
 QMAKE_PROJECT_DEPTH = 0
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,10 +22,13 @@ FORMS += \
 
 # 子工程
 include($$PWD/adb/adb.pri)
+include($$PWD/server/server.pri)
 
 # 包含目录
 INCLUDEPATH += \
-    $$PWD/adb
+    $$PWD/adb \
+    $$PWD/server \
+    $$PWD/enums
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
