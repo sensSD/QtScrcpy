@@ -23,12 +23,23 @@ FORMS += \
 # 子工程
 include($$PWD/adb/adb.pri)
 include($$PWD/server/server.pri)
+include($$PWD/decoder/decoder.pri)
 
 # 包含目录
 INCLUDEPATH += \
     $$PWD/adb \
     $$PWD/server \
-    $$PWD/enums
+    $$PWD/enums \
+    $$PWD/decoder \
+    $$PWD/third_party/ffmpeg/include \
+
+# 依赖模块
+LIBS += \
+    -L$$PWD/third_party/ffmpeg/lib -lavformat \
+    -L$$PWD/third_party/ffmpeg/lib -lavcodec \
+    -L$$PWD/third_party/ffmpeg/lib -lavutil \
+    -L$$PWD/third_party/ffmpeg/lib -lswscale \
+    -L$$PWD/third_party/ffmpeg/lib -libswresample \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

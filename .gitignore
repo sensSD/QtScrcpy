@@ -83,3 +83,4 @@ CMakeLists.txt.user*
 /Test
 /.cache
 /.vscode
+/third_party/ffmpeg

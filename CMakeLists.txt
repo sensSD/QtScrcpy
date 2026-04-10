@@ -5,7 +5,12 @@ project(QtScrcpy LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 开启 Qt 自动处理（自动运行 moc/uic/rcc，无需手动配置）
+# 设置运行时库（Windows）
+if(WIN32)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+endif()
+
+# 开启 Qt 自动处理
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
@@ -34,27 +39,78 @@ set(SERVER_SOURCES
     server/Server.h
 )
 
+set(DECODER_SOURCES
+    decoder/Decoder.cpp
+    decoder/Decoder.h
+)
+
 file(GLOB ENUMS_SOURCES "enums/*.h")
 
-# 生成可执行文件（所有 .cpp/.h/.ui 统一放入）
+# 生成可执行文件
 add_executable(${PROJECT_NAME}
     ${MAIN_SOURCES}
     ${ADB_SOURCES}
     ${SERVER_SOURCES}
     ${ENUMS_SOURCES}
+    ${DECODER_SOURCES}
 )
 
-# 对应 INCLUDEPATH
+# 包含目录
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/adb
     ${CMAKE_CURRENT_SOURCE_DIR}/server
     ${CMAKE_CURRENT_SOURCE_DIR}/enums
+    ${CMAKE_CURRENT_SOURCE_DIR}/decoder
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ffmpeg/include
 )
 
-# 对应 QT += core gui widgets
+# Qt 库链接
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Network
 )
+
+# FFMPEG 库路径和链接
+set(FFMPEG_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/ffmpeg/lib")
+target_link_directories(${PROJECT_NAME} PRIVATE ${FFMPEG_LIB_DIR})
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        avformat
+        avcodec
+        avutil
+        swscale
+        swresample
+        ws2_32
+        secur32
+        shlwapi
+        ole32
+    )
+else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        avformat
+        avcodec
+        avutil
+        swscale
+        swresample
+    )
+endif()
+
+if(WIN32)
+    # 定义FFmpeg DLL目录
+    set(FFMPEG_DLL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/ffmpeg/bin")
+    
+    # 获取所有DLL文件
+    file(GLOB FFMPEG_DLLS "${FFMPEG_DLL_DIR}/*.dll")
+    
+    # 复制DLL到输出目录
+    foreach(dll_file ${FFMPEG_DLLS})
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${dll_file}
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMENT "Copying ${dll_file} to output directory")
+    endforeach()
+endif()
