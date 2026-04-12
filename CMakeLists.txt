@@ -37,11 +37,19 @@ set(ADB_SOURCES
 set(SERVER_SOURCES
     server/Server.cpp
     server/Server.h
+    server/DeviceSocket.cpp
+    server/DeviceSocket.h
+    server/TcpServer.h
+    server/TcpServer.cpp
 )
 
 set(DECODER_SOURCES
     decoder/Decoder.cpp
     decoder/Decoder.h
+)
+
+set(COMMON_SOURCES
+    common/QScrcpyEvent.h
 )
 
 file(GLOB ENUMS_SOURCES "enums/*.h")
@@ -53,6 +61,7 @@ add_executable(${PROJECT_NAME}
     ${SERVER_SOURCES}
     ${ENUMS_SOURCES}
     ${DECODER_SOURCES}
+    ${COMMON_SOURCES}
 )
 
 # 包含目录
@@ -62,6 +71,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/enums
     ${CMAKE_CURRENT_SOURCE_DIR}/decoder
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ffmpeg/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/common
 )
 
 # Qt 库链接

@@ -5,6 +5,7 @@
 #include <qhostaddress.h>
 
 #include "Server.h"
+#include "DeviceSocket.h"
 #include "adbEnums.h"
 #include "adbprocess.h"
 #include "serverEnums.h"
@@ -22,7 +23,7 @@ Server::Server(QObject *parent)
   connect(&m_workProcess, &AdbProcess::adbProcessResult, this, &Server::onWorkProcessResult);
   connect(&m_serverProcess, &AdbProcess::adbProcessResult, this, &Server::onWorkProcessResult);
   connect(&m_serverSocket, &QTcpServer::newConnection, this, [this]{
-    m_deviceSocket = m_serverSocket.nextPendingConnection();
+    m_deviceSocket = dynamic_cast<DeviceSocket*>(m_serverSocket.nextPendingConnection());
 
     // 连接成功时，scrcpy-server会返回devices name，size
     QString deviceName;
@@ -261,7 +262,7 @@ bool Server::readInfo(QString & deviceName, QSize & size)
   }
 
   qint64 len = m_deviceSocket->read((char*)buffer, sizeof(buffer));
-  if(len > DEVICE_NAME_FIELD_LENGTH + 4) {
+  if(len < DEVICE_NAME_FIELD_LENGTH + 4) {
     qInfo("Could not read device info");
     return false;
   }

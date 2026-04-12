@@ -24,6 +24,7 @@ FORMS += \
 include($$PWD/adb/adb.pri)
 include($$PWD/server/server.pri)
 include($$PWD/decoder/decoder.pri)
+include($$PWD/common/common.pri)
 
 # 包含目录
 INCLUDEPATH += \
@@ -32,6 +33,7 @@ INCLUDEPATH += \
     $$PWD/enums \
     $$PWD/decoder \
     $$PWD/third_party/ffmpeg/include \
+    $$PWD/common/ \
 
 # 依赖模块
 LIBS += \
