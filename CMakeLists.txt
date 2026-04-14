@@ -46,6 +46,8 @@ set(SERVER_SOURCES
 set(DECODER_SOURCES
     decoder/Decoder.cpp
     decoder/Decoder.h
+    decoder/Frames.cpp
+    decoder/Frames.h
 )
 
 set(COMMON_SOURCES

@@ -11,13 +11,36 @@ public:
   explicit DeviceSocket(QObject *parent = nullptr);
   ~DeviceSocket();
 
+  /**
+   * @brief 生产者线程调用，接收数据
+   * 
+   * @param buf 
+   * @param bufSize 
+   * @return qint32 
+   */
   qint32 subThreadRecvData(quint8 *buf, qint32 bufSize);
 
 protected:
+  /**
+   * @brief 发送事件与主线程通信
+   * 
+   * @param event 
+   * @return true 
+   * @return false 
+   */
   bool event(QEvent *event) override;
 
 protected slots:
+  /**
+   * @brief 消费者线程调用，接收数据事件的槽函数
+   * 
+   */
   void onReadyRead();
+
+  /**
+   * @brief 退出DeviceSocket
+   * 
+   */
   void quitNotify();
 
 private:

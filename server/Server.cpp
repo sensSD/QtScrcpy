@@ -274,3 +274,8 @@ bool Server::readInfo(QString & deviceName, QSize & size)
 
   return true;
 }
+
+DeviceSocket *Server::getDeviceSocket() const
+{
+  return m_deviceSocket;
+}

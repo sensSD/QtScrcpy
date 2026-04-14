@@ -5,6 +5,8 @@
 #include <QPointer>
 
 #include "server.h"
+#include "Decoder.h"
+#include "Frames.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,6 +29,8 @@ private slots:
 
 private:
     Server m_server;
+    Decoder m_decoder;
+    Frames m_frames;
 
     Ui::Dialog *ui;
 };

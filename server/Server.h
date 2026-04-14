@@ -37,6 +37,8 @@ public:
    */
   void stopServer();
 
+  DeviceSocket *getDeviceSocket() const;
+
 signals:
   /**
    * 服务器启动结果
@@ -139,5 +141,5 @@ private:
   AdbProcess m_serverProcess;
 
   TcpServer m_serverSocket;
-  QPointer<DeviceSocket> m_deviceSocket = nullptr;
+  DeviceSocket* m_deviceSocket = nullptr;
 };

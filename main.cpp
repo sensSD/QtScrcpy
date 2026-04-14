@@ -2,7 +2,6 @@
 #include "dialog.h"
 
 #include <QApplication>
-#include <libavformat/avformat.h>
 
 int main(int argc, char *argv[])
 {
@@ -14,5 +13,10 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     Dialog w;
     w.show();
-    return a.exec();
+
+    int ret = a.exec();
+
+    Decoder::deInit();
+
+    return ret;
 }
