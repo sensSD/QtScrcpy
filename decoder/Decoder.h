@@ -3,7 +3,6 @@
 #include <QMutex>
 #include <QPointer>
 #include <QThread>
-#include <qtmetamacros.h>
 
 extern "C" {
 #include "libavcodec/avcodec.h"

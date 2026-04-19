@@ -1,6 +1,6 @@
 QMAKE_PROJECT_DEPTH = 0
 
-QT       += core gui network
+QT       += core gui network opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,6 +25,8 @@ include($$PWD/adb/adb.pri)
 include($$PWD/server/server.pri)
 include($$PWD/decoder/decoder.pri)
 include($$PWD/common/common.pri)
+include($$PWD/render/render.pri)
+include($$PWD/scopeGuard/scopeGuard.pri)
 
 # 包含目录
 INCLUDEPATH += \
@@ -34,6 +36,8 @@ INCLUDEPATH += \
     $$PWD/decoder \
     $$PWD/third_party/ffmpeg/include \
     $$PWD/common/ \
+    $$PWD/render/ \
+    $$PWD/scopeGuard/ \
 
 # 依赖模块
 LIBS += \
@@ -47,3 +51,8 @@ LIBS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+win32-msvc* {
+    QMAKE_CFLAGS += /utf-8
+    QMAKE_CXXFLAGS += /utf-8
+}

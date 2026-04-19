@@ -16,8 +16,8 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 # 智能兼容 Qt5 和 Qt6
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Gui Widgets Network)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Network)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Gui Widgets Network OpenGL OpenGLWidgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Network OpenGL OpenGLWidgets)
 
 # 主工程文件
 set(MAIN_SOURCES
@@ -54,6 +54,15 @@ set(COMMON_SOURCES
     common/QScrcpyEvent.h
 )
 
+set(RENDER_SOURCES
+    render/QYUVOpenGLWidget.cpp
+    render/QYUVOpenGLWidget.h
+)
+
+set(SCOPE_GUARD_SOURCES
+    scopeGuard/ScopeGuard.h
+)
+
 file(GLOB ENUMS_SOURCES "enums/*.h")
 
 # 生成可执行文件
@@ -64,6 +73,8 @@ add_executable(${PROJECT_NAME}
     ${ENUMS_SOURCES}
     ${DECODER_SOURCES}
     ${COMMON_SOURCES}
+    ${RENDER_SOURCES}
+    ${SCOPE_GUARD_SOURCES}
 )
 
 # 包含目录
@@ -74,6 +85,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/decoder
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ffmpeg/include
     ${CMAKE_CURRENT_SOURCE_DIR}/common
+    ${CMAKE_CURRENT_SOURCE_DIR}/render
+    ${CMAKE_CURRENT_SOURCE_DIR}/scopeGuard
 )
 
 # Qt 库链接
@@ -82,6 +95,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::OpenGL
+    Qt${QT_VERSION_MAJOR}::OpenGLWidgets
 )
 
 # FFMPEG 库路径和链接

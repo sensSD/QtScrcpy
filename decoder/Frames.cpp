@@ -1,5 +1,7 @@
-#include "Frames.h"
 #include <qassert.h>
+
+#include "ScopeGuard.h"
+#include "Frames.h"
 
 extern "C" {
 #include "libavformat/avformat.h"
@@ -10,18 +12,28 @@ Frames::Frames(QObject *parent) : QObject{parent} {
 }
 
 bool Frames::init() {
+  auto cleanup = makeScopeGuard([this]() {
+    if (m_decodingFrame) {
+      av_frame_free(&m_decodingFrame);
+    }
+    if (m_renderingframe) {
+      av_frame_free(&m_renderingframe);
+    }
+
+    m_renderingFrameConsumed = true;
+  });
+  
   m_decodingFrame = av_frame_alloc();
   if (!m_decodingFrame) {
-    goto error;
+    return false;
   }
 
   m_renderingframe = av_frame_alloc();
   if (!m_renderingframe) {
-    goto error;
+    return false;
   }
-
-error:
-  m_renderingFrameConsumed = true;
+  
+  cleanup.dismiss(); // 资源分配成功，取消清理
   return true;
 }
 

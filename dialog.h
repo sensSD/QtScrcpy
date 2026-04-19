@@ -7,6 +7,7 @@
 #include "server.h"
 #include "Decoder.h"
 #include "Frames.h"
+#include "QYUVOpenGLWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,6 +32,7 @@ private:
     Server m_server;
     Decoder m_decoder;
     Frames m_frames;
+    QPointer<QYUVOpenGLWidget> m_videoWidget;
 
     Ui::Dialog *ui;
 };

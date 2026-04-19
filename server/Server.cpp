@@ -1,8 +1,8 @@
-#include <QtCore>
+﻿#include <QtCore>
 #include <QCoreApplication>
 #include <QFileInfo>
 #include <QDir>
-#include <qhostaddress.h>
+#include <QPointer>
 
 #include "Server.h"
 #include "DeviceSocket.h"
@@ -107,14 +107,33 @@ bool Server::startServer(const QString &serial, quint16 localPort, quint16 maxSi
 }
 
 void Server::stopServer() {
-  if(m_deviceSocket) {
-    m_deviceSocket->close();
+  // 保存当前设备套接字，然后清空成员变量
+  DeviceSocket* tempSocket = m_deviceSocket;
+  m_deviceSocket = nullptr;
+
+  // 关闭设备连接
+  if(tempSocket) {
+    tempSocket->close();
+    tempSocket->deleteLater(); // 让 Qt 在事件循环中安全删除
   }
 
+  // 停止并等待服务器进程
   m_serverProcess.kill();
-  disableReverse();
-  removeServer();
+  m_serverProcess.waitForFinished(1000);
+
+  // 关闭服务器监听
   m_serverSocket.close();
+
+  // 延迟清理，避免在信号槽处理过程中删除对象
+  QTimer::singleShot(0, this, [this]() {
+    disableReverse();
+    removeServer();
+  });
+
+  // 重置状态
+  m_enableReverse = false;
+  m_serverCopiedToDevice = false;
+  m_serverStartStep = SSS_NULL;
 }
 
 QString Server::getServerPath() 
@@ -183,24 +202,24 @@ bool Server::pushServer()
 
 bool Server::removeServer()
 {
-  if(!m_serverCopiedToDevice) {
+  if(!m_serverCopiedToDevice || m_serial.isEmpty()) {
     return true;
   }
   m_serverCopiedToDevice = false;
   
-  AdbProcess* adb = new AdbProcess();
-  if(!adb) {
-    return false;
-  }
+  // 创建临时进程对象，使用 Server 作为父对象进行管理
+  AdbProcess* adb = new AdbProcess(this);
   
-  connect(adb, &AdbProcess::adbProcessResult, this, [this](AdbEnums::ADB_EXEC_RESULT processResult) {
-    if(AdbEnums::AER_SUCCESS_START != processResult) {
-      sender()->deleteLater();
+  // 使用 QPointer 确保安全访问 Server 对象
+  QPointer<Server> self(this);
+  connect(adb, &AdbProcess::adbProcessResult, this, [self, adb](AdbEnums::ADB_EXEC_RESULT processResult) {
+    Q_UNUSED(processResult);
+    if (self) { // 检查 Server 是否仍然存在
+      adb->deleteLater();
     }
   });
   
   adb->removePath(m_serial, DEVICE_SERVER_PATH);
-
   return true;
 }
 
@@ -231,34 +250,42 @@ bool Server::executeServer()
 
 bool Server::disableReverse()
 {
-  if(!m_enableReverse) {
+  if(!m_enableReverse || m_serial.isEmpty()) {
     return true;
   }
   
-  AdbProcess* adb = new AdbProcess();
-  if(!adb) {
-    return false;
-  }
+  // 创建临时进程对象，使用 Server 作为父对象进行管理
+  AdbProcess* adb = new AdbProcess(this);
   
-  connect(adb, &AdbProcess::adbProcessResult, this, [this](AdbEnums::ADB_EXEC_RESULT processResult) {
-    if(AdbEnums::AER_SUCCESS_START != processResult) {
-      sender()->deleteLater();
+  // 使用 QPointer 确保安全访问 Server 对象
+  QPointer<Server> self(this);
+  connect(adb, &AdbProcess::adbProcessResult, this, [self, adb](AdbEnums::ADB_EXEC_RESULT processResult) {
+    Q_UNUSED(processResult);
+    if (self) { // 检查 Server 是否仍然存在
+      adb->deleteLater();
     }
   });
   
   adb->removeReverse(m_serial, SOCKET_NAME);
   m_enableReverse = false;
-
   return true;
 }
 
 bool Server::readInfo(QString & deviceName, QSize & size)
 {
+  if (!m_deviceSocket) {
+    qWarning("Device socket is null when reading info");
+    return false;
+  }
+
   // abk001-----------------------0x0438 0x02d0
   //               64b            2b w   2b h
   unsigned char buffer[DEVICE_NAME_FIELD_LENGTH + 4];
   if(m_deviceSocket->bytesAvailable() <= DEVICE_NAME_FIELD_LENGTH + 4) {
-    m_deviceSocket->waitForReadyRead(300);
+    if (!m_deviceSocket->waitForReadyRead(300)) {
+      qWarning("Timeout waiting for device info");
+      return false;
+    }
   }
 
   qint64 len = m_deviceSocket->read((char*)buffer, sizeof(buffer));
