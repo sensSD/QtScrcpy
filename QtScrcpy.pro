@@ -12,13 +12,16 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    dialog.cpp
+    dialog.cpp \
+    vedioform.cpp
 
 HEADERS += \
-    dialog.h
+    dialog.h \
+    vedioform.h
 
 FORMS += \
-    dialog.ui
+    dialog.ui \
+    vedioform.ui
 
 # 子工程
 include($$PWD/adb/adb.pri)

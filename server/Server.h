@@ -55,6 +55,11 @@ signals:
    */
   void connectToResult(bool success, QString deviceName, QSize size);
 
+  /**
+   * @brief 服务器停止信号
+   */
+  void onServerStopped();
+
 private slots:
   /**
    * 工作进程结果

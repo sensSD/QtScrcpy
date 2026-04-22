@@ -4,19 +4,13 @@
 #include <QDialog>
 #include <QPointer>
 
-#include "Controller.h"
-#include "Decoder.h"
-#include "Frames.h"
-#include "QYUVOpenGLWidget.h"
-#include "server.h"
-
-
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class Dialog;
 }
 QT_END_NAMESPACE
 
+class vedioForm;
 class Dialog : public QDialog {
   Q_OBJECT
 
@@ -31,11 +25,7 @@ class Dialog : public QDialog {
   void on_mouseEventBtn_clicked();
 
  private:
-  Server m_server;
-  Decoder m_decoder;
-  Frames m_frames;
-  Controller m_controller;
-  QPointer<QYUVOpenGLWidget> m_videoWidget;
+  QPointer<vedioForm> m_vedioForm;
 
   Ui::Dialog* ui;
 };

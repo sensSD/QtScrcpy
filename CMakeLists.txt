@@ -25,6 +25,9 @@ set(MAIN_SOURCES
     dialog.cpp
     dialog.h
     dialog.ui
+    vedioForm.cpp
+    vedioForm.h
+    vedioForm.ui
 )
 
 # 对应 adb/adb.pri 的内容

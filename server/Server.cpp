@@ -93,6 +93,9 @@ void Server::onWorkProcessResult(AdbEnums::ADB_EXEC_RESULT processResult)
         removeServer();
         emit serverStartResult(false);
       }
+    } else if (SSS_RUNNING == m_serverStartStep) {
+      m_serverStartStep = SSS_NULL;
+      emit onServerStopped();
     }
   }
 }
