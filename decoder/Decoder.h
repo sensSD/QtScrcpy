@@ -14,11 +14,11 @@ class DeviceSocket;
 class Decoder : public QThread {
   Q_OBJECT
 
-public:
-  explicit Decoder(QThread *parent = nullptr);
+ public:
+  explicit Decoder(QThread* parent = nullptr);
   virtual ~Decoder();
 
-public:
+ public:
   /**
    * @brief 初始化解码器
    *
@@ -38,14 +38,14 @@ public:
    *
    * @param frames
    */
-  void setFrames(Frames *frames);
+  void setFrames(Frames* frames);
 
   /**
    * @brief 设置socket
    *
    * @param deviceSocket
    */
-  void setDeviceSocket(DeviceSocket *deviceSocket);
+  void setDeviceSocket(DeviceSocket* deviceSocket);
 
   /**
    * @brief 接收数据
@@ -54,7 +54,7 @@ public:
    * @param bufSize
    * @return qint32
    */
-  qint32 recvData(quint8 *buf, qint32 bufSize);
+  qint32 recvData(quint8* buf, qint32 bufSize);
 
   /**
    * @brief 开始解码
@@ -70,7 +70,7 @@ public:
    */
   void stopDecode();
 
-signals:
+ signals:
   /**
    * @brief 新的帧到达
    *
@@ -83,7 +83,7 @@ signals:
    */
   void onDecodeStop();
 
-protected:
+ protected:
   /**
    * @brief 运行解码线程
    *
@@ -96,8 +96,8 @@ protected:
    */
   void pushFrame();
 
-private:
-  QPointer<DeviceSocket> m_deviceSocket; // 接收h264数据
-  bool m_quit = false;                   // 退出标记
-  Frames *m_frames;                      // 解码出的帧
+ private:
+  QPointer<DeviceSocket> m_deviceSocket;  // 接收h264数据
+  bool m_quit = false;                    // 退出标记
+  Frames* m_frames;                       // 解码出的帧
 };

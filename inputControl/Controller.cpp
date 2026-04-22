@@ -6,7 +6,6 @@
 #include "ControlEventEnums.h"
 #include "DeviceSocket.h"
 
-
 Controller::Controller(QObject* parent) : QObject{parent} {
 }
 

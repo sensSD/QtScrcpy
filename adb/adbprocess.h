@@ -9,18 +9,18 @@ using namespace AdbEnums;
 
 class AdbProcess : public QProcess {
   Q_OBJECT
-public:
-  AdbProcess(QObject *parent = Q_NULLPTR);
+ public:
+  AdbProcess(QObject* parent = Q_NULLPTR);
   ~AdbProcess();
 
-public:
+ public:
   /** 封装adb
    * 执行adb命令
    * @brief execute
    * @param serial
    * @param args
    */
-  void execute(const QString &serial, const QStringList &args);
+  void execute(const QString& serial, const QStringList& args);
 
   /**
    * 上传文件
@@ -29,7 +29,7 @@ public:
    * @param local
    * @param remote
    */
-  void push(const QString &serial, const QString &local, const QString &remote);
+  void push(const QString& serial, const QString& local, const QString& remote);
 
   /**
    * 删除文件
@@ -37,7 +37,7 @@ public:
    * @param serial
    * @param remote
    */
-  void removePath(const QString &serial, const QString &remote);
+  void removePath(const QString& serial, const QString& remote);
 
   /**
    * 端口映射
@@ -46,7 +46,7 @@ public:
    * @param deviceSocketName
    * @param localPort
    */
-  void reverse(const QString &serial, const QString &deviceSocketName, quint16 localPort);
+  void reverse(const QString& serial, const QString& deviceSocketName, quint16 localPort);
 
   /**
    * 删除端口映射
@@ -54,7 +54,7 @@ public:
    * @param serial
    * @param deviceSocketName
    */
-  void removeReverse(const QString &serial, const QString &deviceSocketName);
+  void removeReverse(const QString& serial, const QString& deviceSocketName);
 
   /**
    * 获取设备列表
@@ -91,7 +91,7 @@ public:
    */
   static QString getAdbPath();
 
-signals:
+ signals:
   /**
    * adb执行结果
    * @brief adbProcessResult
@@ -99,7 +99,7 @@ signals:
    */
   void adbProcessResult(ADB_EXEC_RESULT processResult);
 
-private:
+ private:
   /**
    * 信号处理
    * @brief initSignals
@@ -111,4 +111,4 @@ private:
   QString m_standardError;
 };
 
-#endif // ADBPROCESS_H
+#endif  // ADBPROCESS_H

@@ -5,18 +5,19 @@
 #include <QSize>
 
 #include "DeviceSocket.h"
+#include "TcpServer.h"
 #include "adbEnums.h"
 #include "adbprocess.h"
 #include "serverEnums.h"
-#include "TcpServer.h"
+
 
 using namespace ServerEnums;
 
 class Server : public QObject {
   Q_OBJECT
 
-public:
-  explicit Server(QObject *parent = nullptr);
+ public:
+  explicit Server(QObject* parent = nullptr);
   ~Server();
 
   /**
@@ -28,7 +29,7 @@ public:
    * @param bitRate
    * @return
    */
-  bool startServer(const QString &serial, quint16 localPort, quint16 maxSize, quint32 bitRate);
+  bool startServer(const QString& serial, quint16 localPort, quint16 maxSize, quint32 bitRate);
 
   /**
    * 停止服务器
@@ -36,9 +37,9 @@ public:
    */
   void stopServer();
 
-  DeviceSocket *getDeviceSocket() const;
+  DeviceSocket* getDeviceSocket() const;
 
-signals:
+ signals:
   /**
    * 服务器启动结果
    * @brief serverStartResult
@@ -60,7 +61,7 @@ signals:
    */
   void onServerStopped();
 
-private slots:
+ private slots:
   /**
    * 工作进程结果
    * @brief onWorkProcessResult
@@ -68,7 +69,7 @@ private slots:
    */
   void onWorkProcessResult(AdbEnums::ADB_EXEC_RESULT processResult);
 
-private:
+ private:
   /**
    * 获取服务器路径
    * @brief getServerPath
@@ -128,9 +129,9 @@ private:
    * @return true
    * @return false
    */
-  bool readInfo(QString &deviceName, QSize &size);
+  bool readInfo(QString& deviceName, QSize& size);
 
-private:
+ private:
   QString m_serial;
   quint16 m_localPort;
   quint16 m_maxSize;

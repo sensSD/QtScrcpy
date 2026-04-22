@@ -1,14 +1,16 @@
+#include "Frames.h"
+
 #include <qassert.h>
 
 #include "ScopeGuard.h"
-#include "Frames.h"
+
 
 extern "C" {
 #include "libavformat/avformat.h"
 #include "libavutil/avutil.h"
 }
 
-Frames::Frames(QObject *parent) : QObject{parent} {
+Frames::Frames(QObject* parent) : QObject{parent} {
 }
 
 bool Frames::init() {
@@ -22,7 +24,7 @@ bool Frames::init() {
 
     m_renderingFrameConsumed = true;
   });
-  
+
   m_decodingFrame = av_frame_alloc();
   if (!m_decodingFrame) {
     return false;
@@ -32,8 +34,8 @@ bool Frames::init() {
   if (!m_renderingframe) {
     return false;
   }
-  
-  cleanup.dismiss(); // 资源分配成功，取消清理
+
+  cleanup.dismiss();  // 资源分配成功，取消清理
   return true;
 }
 
@@ -70,7 +72,7 @@ bool Frames::offerDecodedFrames() {
   bool previousFrameConsumed = m_renderingFrameConsumed;
   m_renderingFrameConsumed = false;
   m_mutex.unlock();
-  
+
   return previousFrameConsumed;
 }
 
@@ -82,7 +84,7 @@ const AVFrame* Frames::consumeRenderingFrame() {
 }
 
 void Frames::swap() {
-  AVFrame *temp = m_decodingFrame;
+  AVFrame* temp = m_decodingFrame;
   m_decodingFrame = m_renderingframe;
   m_renderingframe = temp;
 }

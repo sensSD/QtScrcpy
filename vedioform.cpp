@@ -1,4 +1,5 @@
 ﻿#include "vedioForm.h"
+
 #include <qnamespace.h>
 
 #include "ui_vedioForm.h"
@@ -27,7 +28,7 @@ vedioForm::vedioForm(const QString& serial, QWidget* parent)
 
   connect(&m_server, &Server::onServerStopped, this, [this] {
     close();
-    qDebug() << "Server stopped";  
+    qDebug() << "Server stopped";
   });
 
   connect(&m_decoder, &Decoder::onDecodeStop, this, [this]() {
@@ -42,7 +43,7 @@ vedioForm::vedioForm(const QString& serial, QWidget* parent)
     // 渲染视频帧
     ui->vedioWidget->setFrameSize(QSize(frame->width, frame->height));
     ui->vedioWidget->updateTextures(frame->data[0], frame->data[1], frame->data[2],
-                                     frame->linesize[0], frame->linesize[1], frame->linesize[2]);
+                                    frame->linesize[0], frame->linesize[1], frame->linesize[2]);
     m_frames.unLock();
   });
 
