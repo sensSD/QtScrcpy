@@ -93,7 +93,7 @@ void Decoder::run() {
   bool isCodecCtxOpen = false;
 
   // 定义资源清理函数
-  auto cleanup =  makeScopeGuard([&]() {
+  auto cleanup =  sg::make_scope_guard([&]() {
     if (isCodecCtxOpen && codecCtx) {
       avcodec_free_context(&codecCtx);
     }

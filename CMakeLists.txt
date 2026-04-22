@@ -63,6 +63,18 @@ set(SCOPE_GUARD_SOURCES
     scopeGuard/ScopeGuard.h
 )
 
+set(ANDROID_SOURCES
+    android/keycodes.h
+    android/input.h
+)
+
+set(INPUTCONTROL_SOURCES
+    inputControl/ControlEvent.h
+    inputControl/ControlEvent.cpp
+    inputControl/Controller.h
+    inputControl/Controller.cpp
+)
+
 file(GLOB ENUMS_SOURCES "enums/*.h")
 
 # 生成可执行文件
@@ -75,6 +87,8 @@ add_executable(${PROJECT_NAME}
     ${COMMON_SOURCES}
     ${RENDER_SOURCES}
     ${SCOPE_GUARD_SOURCES}
+    ${ANDROID_SOURCES}
+    ${INPUTCONTROL_SOURCES}
 )
 
 # 包含目录
@@ -87,6 +101,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/common
     ${CMAKE_CURRENT_SOURCE_DIR}/render
     ${CMAKE_CURRENT_SOURCE_DIR}/scopeGuard
+    ${CMAKE_CURRENT_SOURCE_DIR}/android
+    ${CMAKE_CURRENT_SOURCE_DIR}/inputControl
 )
 
 # Qt 库链接

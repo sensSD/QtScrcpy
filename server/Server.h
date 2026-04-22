@@ -10,7 +10,6 @@
 #include "serverEnums.h"
 #include "TcpServer.h"
 
-
 using namespace ServerEnums;
 
 class Server : public QObject {
@@ -18,6 +17,7 @@ class Server : public QObject {
 
 public:
   explicit Server(QObject *parent = nullptr);
+  ~Server();
 
   /**
    * 开始服务器
@@ -28,8 +28,7 @@ public:
    * @param bitRate
    * @return
    */
-  bool startServer(const QString &serial, quint16 localPort, quint16 maxSize,
-                   quint32 bitRate);
+  bool startServer(const QString &serial, quint16 localPort, quint16 maxSize, quint32 bitRate);
 
   /**
    * 停止服务器

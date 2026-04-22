@@ -12,7 +12,7 @@ Frames::Frames(QObject *parent) : QObject{parent} {
 }
 
 bool Frames::init() {
-  auto cleanup = makeScopeGuard([this]() {
+  auto cleanup = sg::make_scope_guard([this]() {
     if (m_decodingFrame) {
       av_frame_free(&m_decodingFrame);
     }

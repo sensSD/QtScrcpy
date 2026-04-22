@@ -15,6 +15,8 @@
 #define DEVICE_NAME_FIELD_LENGTH 64
 #define MAX_CONNECTIONS 1
 
+#define TEST
+
 QString Server::m_serverPath = "";
 
 Server::Server(QObject *parent)
@@ -305,4 +307,13 @@ bool Server::readInfo(QString & deviceName, QSize & size)
 DeviceSocket *Server::getDeviceSocket() const
 {
   return m_deviceSocket;
+}
+
+Server::~Server() {
+  stopServer();
+  
+  // 如果设置了清理标志，则尝试删除服务器
+  if(m_serverCopiedToDevice) {
+    removeServer();
+  }
 }

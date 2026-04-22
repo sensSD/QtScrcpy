@@ -1,22 +1,22 @@
-﻿#include "Decoder.h"
+﻿#include <QApplication>
+
+#include "Decoder.h"
 #include "dialog.h"
 
-#include <QApplication>
+int main(int argc, char* argv[]) {
+  // 设置环境变量
+  qputenv("QSCRCPY_ADB_PATH", "..\\..\\..\\thrid_party\\adb\\win\\adb.exe");
 
-int main(int argc, char *argv[])
-{
-    // 设置环境变量
-    qputenv("QSCRCPY_ADB_PATH", "..\\..\\..\\thrid_party\\adb\\win\\adb.exe");
+  Decoder::init();
 
-    Decoder::init();
-    
-    QApplication a(argc, argv);
-    Dialog w;
-    w.show();
+  QApplication a(argc, argv);
 
-    int ret = a.exec();
+  Dialog w;
+  w.show();
 
-    Decoder::deInit();
+  int ret = a.exec();
 
-    return ret;
+  Decoder::deInit();
+
+  return ret;
 }
