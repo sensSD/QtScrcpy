@@ -7,6 +7,7 @@
 #include "Decoder.h"
 #include "Frames.h"
 #include "Server.h"
+#include "InputConvertNormal.h"
 
 namespace Ui {
 class vedioForm;
@@ -19,6 +20,14 @@ class vedioForm : public QWidget {
   explicit vedioForm(const QString& serial, QWidget* parent = nullptr);
   ~vedioForm();
 
+ protected:
+  virtual void mousePressEvent(QMouseEvent* event);
+  virtual void mouseReleaseEvent(QMouseEvent* event);
+  virtual void mouseMoveEvent(QMouseEvent* event);
+  virtual void wheelEvent(QWheelEvent* event);
+  virtual void keyPressEvent(QKeyEvent* event);
+  virtual void keyReleaseEvent(QKeyEvent* event);
+
  private:
   QString m_serial;
   Server m_server;
@@ -26,6 +35,7 @@ class vedioForm : public QWidget {
   Frames m_frames;
   Controller m_controller;
   Ui::vedioForm* ui;
+  InputConvertNormal m_inputConvert;
 };
 
 #endif  // VEDIOFORM_H

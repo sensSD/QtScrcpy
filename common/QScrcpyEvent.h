@@ -4,7 +4,6 @@
 
 #include "QScrcpyEventEnums.h"
 
-
 using namespace QScrcpyEventEnums;
 
 class QScrcpyEvent : public QEvent {

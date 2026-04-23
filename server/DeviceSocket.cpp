@@ -7,7 +7,6 @@
 #include "QScrcpyEvent.h"
 #include "QScrcpyEventEnums.h"
 
-
 DeviceSocket::DeviceSocket(QObject* parent) : QTcpSocket{parent} {
   connect(this, &DeviceSocket::readyRead, this, &DeviceSocket::onReadyRead);
   connect(this, &DeviceSocket::disconnected, this, &DeviceSocket::quitNotify);
@@ -55,14 +54,14 @@ void DeviceSocket::onReadyRead() {
 }
 
 void DeviceSocket::quitNotify() {
-  m_quit = true;
   QMutexLocker locker(&m_mutex);
+  m_quit = true;
   if (m_buffer) {
     m_buffer = nullptr;
     m_bufferSize = 0;
     m_recvData = true;
     m_dataSize = 0;
-    m_recvDataCond.wakeOne();
+    m_recvDataCond.wakeAll();  // 改为 wakeAll() 确保所有等待的线程都被唤醒
   }
 }
 

@@ -5,7 +5,6 @@
 #include <QOpenGLTexture>
 #include <QSurfaceFormat>
 
-
 // 顶点坐标和纹理坐标数据
 static const GLfloat coordinate[] = {
     // 顶点坐标，存储4个xyz坐标
@@ -191,37 +190,23 @@ void QYUVOpenGLWidget::initShader() {
 }
 
 void QYUVOpenGLWidget::initTextures() {
-  // 创建纹理
-  glGenTextures(1, &m_texture[0]);
-  glBindTexture(GL_TEXTURE_2D, m_texture[0]);
-  // 设置纹理缩放时的策略
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // 设置st方向上纹理超出坐标时的显示策略
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_frameSize.width(), m_frameSize.height(), 0,
-               GL_LUMINANCE, GL_UNSIGNED_BYTE, nullptr);
+  // YUV三个分量的大小：Y是全尺寸，U/V是半尺寸
+  const QSize sizes[] = {m_frameSize, m_frameSize / 2, m_frameSize / 2};
 
-  glGenTextures(1, &m_texture[1]);
-  glBindTexture(GL_TEXTURE_2D, m_texture[1]);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_frameSize.width() / 2, m_frameSize.height() / 2, 0,
-               GL_LUMINANCE, GL_UNSIGNED_BYTE, nullptr);
+  for (int i = 0; i < 3; ++i) {
+    glGenTextures(1, &m_texture[i]);
+    glBindTexture(GL_TEXTURE_2D, m_texture[i]);
 
-  glGenTextures(1, &m_texture[2]);
-  glBindTexture(GL_TEXTURE_2D, m_texture[2]);
-  // 设置纹理缩放时的策略
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // 设置st方向上纹理超出坐标时的显示策略
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_frameSize.width() / 2, m_frameSize.height() / 2, 0,
-               GL_LUMINANCE, GL_UNSIGNED_BYTE, nullptr);
+    // 设置纹理参数
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // 创建纹理
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, sizes[i].width(), sizes[i].height(), 0,
+                 GL_LUMINANCE, GL_UNSIGNED_BYTE, nullptr);
+  }
 
   m_textureInitialized = true;
 }

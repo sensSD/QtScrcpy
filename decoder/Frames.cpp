@@ -4,7 +4,6 @@
 
 #include "ScopeGuard.h"
 
-
 extern "C" {
 #include "libavformat/avformat.h"
 #include "libavutil/avutil.h"
@@ -90,5 +89,6 @@ void Frames::swap() {
 }
 
 void Frames::stop() {
-  // Implementation for stopping the frames
+  // 唤醒所有等待的线程，防止死锁
+  QMutexLocker locker(&m_mutex);
 }

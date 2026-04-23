@@ -84,6 +84,13 @@ class ControlEvent : public QScrcpyEvent {
    * @param byteCount
    */
   void writeByByte(QBuffer& buffer, quint32 value, int byteCount = 4);
+
+  /**
+   * @brief 将鼠标定位写入缓冲区
+   * 
+   * @param buffer 
+   * @param value 
+   */
   void writePosition(QBuffer& buffer, const QRect& value);
 
  private:

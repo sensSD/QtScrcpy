@@ -5,7 +5,6 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLWidget>
 
-
 class QYUVOpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
 

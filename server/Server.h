@@ -10,7 +10,6 @@
 #include "adbprocess.h"
 #include "serverEnums.h"
 
-
 using namespace ServerEnums;
 
 class Server : public QObject {

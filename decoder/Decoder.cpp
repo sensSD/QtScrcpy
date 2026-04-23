@@ -1,11 +1,12 @@
 ﻿#include "Decoder.h"
 
 #include <QDebug>
+#include <QTime>
 
 #include "DeviceSocket.h"
 #include "Frames.h"
 #include "ScopeGuard.h"
-
+#include "libavcodec/codec.h"
 
 #define BUFSIZE 0x10000
 
@@ -13,7 +14,6 @@ Decoder::Decoder(QThread* parent) : QThread{parent} {
 }
 
 Decoder::~Decoder() {
-  stopDecode();
 }
 
 bool Decoder::init() {
@@ -40,19 +40,7 @@ void Decoder::setDeviceSocket(DeviceSocket* deviceSocket) {
 static qint32 readPacket(void* opaque, quint8* buf, qint32 bufSize) {
   Decoder* decoder = (Decoder*)opaque;
   if (decoder) {
-    return decoder->recvData(buf, bufSize);
-  }
-  return 0;
-}
-
-qint32 Decoder::recvData(quint8* buf, qint32 bufSize) {
-  if (!buf) {
-    return 0;
-  }
-  if (m_deviceSocket) {
-    // 从deviceSocket获取h264数据
-    qint32 len = m_deviceSocket->subThreadRecvData(buf, bufSize);
-    // qDebug() << "recvData len:" << len;
+    quint32 len = decoder->recvData(buf, bufSize);
     if (len == -1) {
       return AVERROR(errno);
     }
@@ -62,6 +50,18 @@ qint32 Decoder::recvData(quint8* buf, qint32 bufSize) {
     return len;
   }
   return AVERROR_EOF;
+}
+
+qint32 Decoder::recvData(quint8* buf, qint32 bufSize) {
+  if (!buf) {
+    return 0;
+  }
+  if (m_deviceSocket) {
+    // 从deviceSocket获取h264数据
+    qint32 len = m_deviceSocket->subThreadRecvData(buf, bufSize);
+    return len;
+  }
+  return 0;
 }
 
 bool Decoder::startDecode() {
@@ -81,7 +81,6 @@ void Decoder::stopDecode() {
   if (m_frames) {
     m_frames->stop();
   }
-  // 等待解码线程退出
   wait();
 }
 
@@ -90,6 +89,7 @@ void Decoder::run() {
   AVIOContext* avioCtx = nullptr;
   AVFormatContext* formatCtx = nullptr;
   AVCodecContext* codecCtx = nullptr;
+  const AVCodec* codec = nullptr;
   AVPacket* packet = nullptr;
   bool isFormatCtxOpen = false;
   bool isCodecCtxOpen = false;
@@ -147,7 +147,7 @@ void Decoder::run() {
   isFormatCtxOpen = true;
 
   // 初始化解码器
-  const AVCodec* codec = avcodec_find_decoder(AV_CODEC_ID_H264);
+  codec = avcodec_find_decoder(AV_CODEC_ID_H264);
   if (!codec) {
     qCritical("Could not find H.264 codec");
     return;

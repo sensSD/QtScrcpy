@@ -11,7 +11,6 @@
 #include "adbprocess.h"
 #include "serverEnums.h"
 
-
 #define DEVICE_SERVER_PATH "/data/local/tmp/scrcpy-server.jar"
 #define SOCKET_NAME "scrcpy"
 #define DEVICE_NAME_FIELD_LENGTH 64
@@ -117,21 +116,24 @@ void Server::stopServer() {
   // 关闭设备连接
   if (tempSocket) {
     tempSocket->close();
-    tempSocket->deleteLater();  // 让 Qt 在事件循环中安全删除
+    tempSocket->deleteLater();
   }
 
-  // 停止并等待服务器进程
-  m_serverProcess.kill();
-  m_serverProcess.waitForFinished(1000);
+  // 停止服务器进程
+  if (m_serverProcess.state() == QProcess::Running) {
+    m_serverProcess.terminate();
+    if (!m_serverProcess.waitForFinished(2000)) {
+      m_serverProcess.kill();
+      m_serverProcess.waitForFinished(1000);
+    }
+  }
 
   // 关闭服务器监听
   m_serverSocket.close();
 
-  // 延迟清理，避免在信号槽处理过程中删除对象
-  QTimer::singleShot(0, this, [this]() {
-    disableReverse();
-    removeServer();
-  });
+  // 同步清理
+  disableReverse();
+  removeServer();
 
   // 重置状态
   m_enableReverse = false;
@@ -205,20 +207,21 @@ bool Server::removeServer() {
   }
   m_serverCopiedToDevice = false;
 
-  // 创建临时进程对象，使用 Server 作为父对象进行管理
+  // 创建临时进程对象
   AdbProcess* adb = new AdbProcess(this);
 
-  // 使用 QPointer 确保安全访问 Server 对象
-  QPointer<Server> self(this);
-  connect(adb, &AdbProcess::adbProcessResult, this,
-          [self, adb](AdbEnums::ADB_EXEC_RESULT processResult) {
-            Q_UNUSED(processResult);
-            if (self) {  // 检查 Server 是否仍然存在
-              adb->deleteLater();
-            }
-          });
-
+  // 执行删除命令
   adb->removePath(m_serial, DEVICE_SERVER_PATH);
+
+  // 同步等待adb命令完成，而不是异步回调
+  bool finished = adb->waitForFinished(5000);  // 等待5秒
+  if (!finished) {
+    qWarning("Remove server timeout, killing adb process");
+    adb->kill();
+    adb->waitForFinished(1000);
+  }
+
+  adb->deleteLater();
   return true;
 }
 
@@ -247,21 +250,22 @@ bool Server::disableReverse() {
     return true;
   }
 
-  // 创建临时进程对象，使用 Server 作为父对象进行管理
+  // 创建临时进程对象
   AdbProcess* adb = new AdbProcess(this);
 
-  // 使用 QPointer 确保安全访问 Server 对象
-  QPointer<Server> self(this);
-  connect(adb, &AdbProcess::adbProcessResult, this,
-          [self, adb](AdbEnums::ADB_EXEC_RESULT processResult) {
-            Q_UNUSED(processResult);
-            if (self) {  // 检查 Server 是否仍然存在
-              adb->deleteLater();
-            }
-          });
-
+  // 执行删除端口映射命令
   adb->removeReverse(m_serial, SOCKET_NAME);
+
+  // 同步等待完成
+  bool finished = adb->waitForFinished(3000);
+  if (!finished) {
+    qWarning("Disable reverse timeout, killing adb process");
+    adb->kill();
+    adb->waitForFinished(1000);
+  }
+
   m_enableReverse = false;
+  adb->deleteLater();
   return true;
 }
 
