@@ -29,6 +29,9 @@ class vedioForm : public QWidget {
   virtual void keyReleaseEvent(QKeyEvent* event);
 
  private:
+  void updateShowSize(const QSize& newSize);
+
+ private:
   QString m_serial;
   Server m_server;
   Decoder m_decoder;
@@ -36,6 +39,7 @@ class vedioForm : public QWidget {
   Controller m_controller;
   Ui::vedioForm* ui;
   InputConvertNormal m_inputConvert;
+  QSize m_frameSize;
 };
 
 #endif  // VEDIOFORM_H

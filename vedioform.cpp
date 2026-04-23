@@ -4,6 +4,9 @@
 
 #include "ui_vedioForm.h"
 
+#define VIDEO_FROM_WIDTH 420
+#define VIDEO_FROM_HEIGHT 850
+
 vedioForm::vedioForm(const QString& serial, QWidget* parent)
     : QWidget(parent), ui(new Ui::vedioForm), m_serial(serial) {
   ui->setupUi(this);
@@ -16,6 +19,9 @@ vedioForm::vedioForm(const QString& serial, QWidget* parent)
           [this](bool success, QString deviceName, QSize size) {
             qDebug() << "connectToResult" << success;
             if (success) {
+              setWindowTitle(deviceName);
+              updateShowSize(size);
+
               m_decoder.setDeviceSocket(m_server.getDeviceSocket());
               m_decoder.startDecode();
 
@@ -40,16 +46,18 @@ vedioForm::vedioForm(const QString& serial, QWidget* parent)
     // qDebug() << "onNewFrame";
     m_frames.lock();
     const AVFrame* frame = m_frames.consumeRenderingFrame();
+
+    updateShowSize(QSize(frame->width, frame->height));
+
     // 渲染视频帧
     ui->vedioWidget->setFrameSize(QSize(frame->width, frame->height));
     ui->vedioWidget->updateTextures(frame->data[0], frame->data[1], frame->data[2],
                                     frame->linesize[0], frame->linesize[1], frame->linesize[2]);
     m_frames.unLock();
   });
+  updateShowSize(size());
 
-  QTimer::singleShot(0, this, [this](){
-        m_server.startServer(m_serial, 27183, 720, 8000000);
-    });
+  QTimer::singleShot(0, this, [this]() { m_server.startServer(m_serial, 27183, 720, 8000000); });
 }
 
 vedioForm::~vedioForm() {
@@ -82,4 +90,17 @@ void vedioForm::keyPressEvent(QKeyEvent* event) {
 
 void vedioForm::keyReleaseEvent(QKeyEvent* event) {
   m_inputConvert.keyEvent(event, ui->vedioWidget->frameSize(), ui->vedioWidget->size());
+}
+
+void vedioForm::updateShowSize(const QSize& newSize) {
+  if (m_frameSize != newSize) {
+    m_frameSize = newSize;
+
+    bool vertical = newSize.height() > newSize.width();
+    if (vertical) {
+      resize(VIDEO_FROM_WIDTH, VIDEO_FROM_HEIGHT);
+    } else {
+      resize(VIDEO_FROM_HEIGHT, VIDEO_FROM_WIDTH);
+    }
+  }
 }
