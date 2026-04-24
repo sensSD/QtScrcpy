@@ -80,6 +80,8 @@ set(INPUTCONTROL_SOURCES
     inputControl/InputConvertBase.cpp
     inputControl/InputConvertNormal.h
     inputControl/InputConvertNormal.cpp
+    inputControl/InputConvertGame.h
+    inputControl/InputConvertGame.cpp
 )
 
 file(GLOB ENUMS_SOURCES "enums/*.h")

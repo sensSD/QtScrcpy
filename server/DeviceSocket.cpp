@@ -66,7 +66,7 @@ void DeviceSocket::quitNotify() {
 }
 
 bool DeviceSocket::event(QEvent* event) {
-  if (event->type() == QScrcpyEventEnums::DeviceSocket) {
+  if (event->type() == QScrcpyEventEnums::DeviceSocketId) {
     onReadyRead();
     return true;
   }

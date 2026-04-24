@@ -8,6 +8,7 @@
 #include "Frames.h"
 #include "Server.h"
 #include "InputConvertNormal.h"
+#include "InputConvertGame.h"
 
 namespace Ui {
 class vedioForm;
@@ -38,7 +39,8 @@ class vedioForm : public QWidget {
   Frames m_frames;
   Controller m_controller;
   Ui::vedioForm* ui;
-  InputConvertNormal m_inputConvert;
+  // InputConvertNormal m_inputConvert;
+  InputConvertGame m_inputConvert;
   QSize m_frameSize;
 };
 

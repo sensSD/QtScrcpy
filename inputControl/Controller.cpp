@@ -9,7 +9,7 @@
 Controller::Controller(QObject* parent) : QObject{parent} {
 }
 
-void Controller::setDeviceSocket(::DeviceSocket* deviceSocket) {
+void Controller::setDeviceSocket(DeviceSocket* deviceSocket) {
   m_deviceSocket = deviceSocket;
 }
 

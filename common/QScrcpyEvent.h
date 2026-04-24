@@ -14,6 +14,6 @@ class QScrcpyEvent : public QEvent {
 
 class DeviceSocketEvent : public QScrcpyEvent {
  public:
-  DeviceSocketEvent() : QScrcpyEvent(QScrcpyEventEnums::DeviceSocket) {
+  DeviceSocketEvent() : QScrcpyEvent(QScrcpyEventEnums::DeviceSocketId) {
   }
 };

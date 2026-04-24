@@ -6,7 +6,7 @@
 
 namespace QScrcpyEventEnums {
 enum Type {
-  DeviceSocket = QEvent::User + 1,  // 设备套接字事件
+  DeviceSocketId = QEvent::User + 1,  // 设备套接字事件
   Control,
 };
 }
