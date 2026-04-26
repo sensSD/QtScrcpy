@@ -98,6 +98,7 @@ add_executable(${PROJECT_NAME}
     ${SCOPE_GUARD_SOURCES}
     ${ANDROID_SOURCES}
     ${INPUTCONTROL_SOURCES}
+    theme.qrc
 )
 
 # 包含目录

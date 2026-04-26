@@ -21,7 +21,7 @@ class InputConvertBase {
                           const QSize& widgetSize) = 0;
   virtual void keyEvent(const QKeyEvent* from, const QSize& frameSize, const QSize& widgetSize) = 0;
 
-  void setDeviceSocket(::DeviceSocket* deviceSocket);
+  void setDeviceSocket(DeviceSocket* deviceSocket);
 
   /**
    * @brief 发送控制事件
