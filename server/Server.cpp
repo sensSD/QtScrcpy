@@ -156,8 +156,6 @@ QString Server::getServerPath() {
     }
   }
 
-  // qDebug() << m_serverPath;
-
   return m_serverPath;
 }
 

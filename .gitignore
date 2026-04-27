@@ -85,3 +85,4 @@ CMakeLists.txt.user*
 /.cache
 /.vscode
 /third_party/ffmpeg
+/output

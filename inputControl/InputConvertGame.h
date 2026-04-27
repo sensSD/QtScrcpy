@@ -244,7 +244,7 @@ class InputConvertGame : public QObject, public InputConvertNormal {
   QSize m_showSize;
 
   // 映射模式标准
-  bool m_gameMap;
+  bool m_gameMap = false;
 
   // 多点触控ID
   int multiTouchID[MULTI_TOUCH_MAX_NUM] = {0};

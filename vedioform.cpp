@@ -1,7 +1,13 @@
 ﻿#include "vedioForm.h"
 
+#include <QRect>
 #include <QTimer>
 
+#ifdef Q_OS_WIN32
+#include <windows.h>
+#endif
+
+#include "InputConvertGame.h"
 #include "ui_vedioForm.h"
 
 #define VIDEO_FROM_WIDTH 420
@@ -11,6 +17,25 @@ vedioForm::vedioForm(const QString& serial, QWidget* parent)
     : QWidget(parent), ui(new Ui::vedioForm), m_serial(serial) {
   ui->setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
+  setMouseTracking(true);
+  ui->vedioWidget->setMouseTracking(true);
+
+  connect(&m_inputConvert, &InputConvertGame::grabCursor, this, [this](bool grab) {
+#ifdef Q_OS_WIN32
+    if (grab) {
+      QRect rc(mapToGlobal(ui->vedioWidget->pos()), ui->vedioWidget->size());
+      RECT mainRect;
+      mainRect.left = (LONG)rc.left();
+      mainRect.top = (LONG)rc.top();
+      mainRect.right = (LONG)rc.right();
+      mainRect.bottom = (LONG)rc.bottom();
+
+      ClipCursor(&mainRect);
+    } else {
+      ClipCursor(nullptr);
+    }
+#endif
+  });
 
   connect(&m_server, &Server::serverStartResult, this,
           [this](bool success) { qDebug() << "serverStartResult" << success; });

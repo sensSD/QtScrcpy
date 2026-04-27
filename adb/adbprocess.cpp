@@ -9,7 +9,6 @@
 #include <QString>
 #include <QtCore>
 
-
 QString AdbProcess::s_adbPath = "";
 
 AdbProcess::AdbProcess(QObject* parent) : QProcess(parent) {
@@ -95,11 +94,19 @@ QString AdbProcess::getAdbPath() {
         dir.cdUp();
       }
 
+#ifdef Q_OS_WIN32
       s_adbPath = dir.path() + "/third_party/adb/win/adb.exe";
+#endif
+
+#ifdef Q_OS_LINUX
+      s_adbPath = dir.path() + "third_party/adb/linux/adb";
+#endif
+
+#ifdef Q_OS_APPLE
+      s_adbPath = dir.path() + "third_party/adb/mac/adb";
+#endif
     }
   }
-
-  // qDebug() << s_adbPath;
 
   return s_adbPath;
 }
