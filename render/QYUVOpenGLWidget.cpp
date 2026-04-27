@@ -2,8 +2,11 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QElapsedTimer>
 #include <QOpenGLTexture>
 #include <QSurfaceFormat>
+#include <chrono>
+
 
 // 顶点坐标和纹理坐标数据
 static const GLfloat coordinate[] = {
@@ -156,6 +159,20 @@ void QYUVOpenGLWidget::paintGL() {
   }
 
   m_shaderProgram.release();
+
+  static QElapsedTimer timer;
+  static bool first = true;
+  if (first) {
+    timer.start();
+    first = false;
+  }
+
+  static int cnt = 0;
+  if (++cnt % 30 == 0) {
+    qDebug() << "[OpenGL] Avg paintGL time:" << timer.elapsed() / 30.0 << "ms";
+    timer.restart();
+    cnt = 0;
+  }
 }
 
 void QYUVOpenGLWidget::initShader() {

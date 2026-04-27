@@ -180,10 +180,18 @@ void Decoder::run() {
 
   // 从封装上下文中读取一帧解码前的数据，保存到AVPacket中
   while (!m_quit && !av_read_frame(formatCtx, packet)) {
+    // 打点1：记录这一帧的接收完成时间（用于计算端到端延迟）
+    auto recv_ts = std::chrono::steady_clock::now();
+    m_currentFrameRecvTs = recv_ts;
+
     // 获取AVFrame用来保存解码出来的yuv数据
     AVFrame* decodingFrame = m_frames->decodingFrame();
     // 解码
     int ret;
+
+    // 打点2：记录解码开始时间
+    auto dec_start = std::chrono::steady_clock::now();
+
     // 解码h264
     if ((ret = avcodec_send_packet(codecCtx, packet)) < 0) {
       qCritical("Could not send video packet: %d", ret);
@@ -194,6 +202,22 @@ void Decoder::run() {
       ret = avcodec_receive_frame(codecCtx, decodingFrame);
     }
     if (!ret) {
+      // 打点3：记录解码耗时
+      auto dec_end = std::chrono::steady_clock::now();
+      auto dec_ms =
+          std::chrono::duration_cast<std::chrono::microseconds>(dec_end - dec_start).count() /
+          1000.0;
+
+      static int frame_count = 0;
+      static qint64 total_dec_ms = 0;
+      frame_count++;
+      total_dec_ms += dec_ms;
+      if (frame_count % 30 == 0) {
+        qDebug() << "[Decoder] Avg decode latency:" << (total_dec_ms / 30.0) << "ms";
+        total_dec_ms = 0;
+        frame_count = 0;
+      }
+
       // 成功解码出一帧
       pushFrame();
     } else if (ret != AVERROR(EAGAIN)) {

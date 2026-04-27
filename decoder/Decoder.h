@@ -3,6 +3,8 @@
 #include <QMutex>
 #include <QPointer>
 #include <QThread>
+#include <chrono>
+#include <QElapsedTimer>
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -100,4 +102,5 @@ class Decoder : public QThread {
   QPointer<DeviceSocket> m_deviceSocket;  // 接收h264数据
   bool m_quit = false;                    // 退出标记
   Frames* m_frames;                       // 解码出的帧
+  std::chrono::steady_clock::time_point m_currentFrameRecvTs;
 };
